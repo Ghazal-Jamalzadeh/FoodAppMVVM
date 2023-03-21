@@ -3,7 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.jmzd.ghazal.foodappmvvm">
 
-    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.INTERNET" />
+
     <application
         android:name=".utils.MyApp"
         android:allowBackup="true"
@@ -15,6 +16,10 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.FoodAppMVVM"
         tools:targetApi="31">
+        <activity
+            android:name=".ui.detail.player.PlayerActivity"
+            android:exported="false"
+            android:screenOrientation="sensorLandscape"/>
         <activity
             android:name=".ui.MainActivity"
             android:exported="true">

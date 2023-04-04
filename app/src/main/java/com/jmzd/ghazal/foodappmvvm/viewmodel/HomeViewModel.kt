@@ -22,4 +22,10 @@ class HomeViewModel @Inject constructor(private val repository: HomeRepository) 
         }
     }
 
+    val filtersListData = MutableLiveData<MutableList<Char>>()
+    fun loadFilterList() = viewModelScope.launch(Dispatchers.IO) {
+        val letters = listOf('A'..'Z').flatten().toMutableList()
+        filtersListData.postValue(letters)
+    }
+
 }

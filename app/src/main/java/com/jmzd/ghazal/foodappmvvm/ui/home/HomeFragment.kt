@@ -9,6 +9,7 @@ import androidx.fragment.app.viewModels
 import coil.load
 import com.jmzd.ghazal.foodappmvvm.R
 import com.jmzd.ghazal.foodappmvvm.databinding.FragmentHomeBinding
+import com.jmzd.ghazal.foodappmvvm.utils.setupListWithAdapter
 import com.jmzd.ghazal.foodappmvvm.viewmodel.HomeViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -44,6 +45,14 @@ class HomeFragment : Fragment() {
                         crossfade(true)
                         crossfade(500)
                     }
+                }
+            }
+            //Filters
+            viewModel.loadFilterList()
+            viewModel.filtersListData.observe(viewLifecycleOwner) {
+                //it : MutableList<Char>!
+                filterSpinner.setupListWithAdapter(it) { letter : String ->
+//                    viewModel.loadFoodsList(letter)
                 }
             }
         }

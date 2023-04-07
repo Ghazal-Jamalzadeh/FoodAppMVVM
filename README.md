@@ -3,6 +3,7 @@ Kotlin \
 MVP Architecture \
 Flow \
 LiveData \
+Coroutines \
 Single Activity \
 Navigation Component \
 Retrofit \

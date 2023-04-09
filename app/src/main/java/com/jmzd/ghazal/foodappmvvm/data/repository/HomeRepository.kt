@@ -1,9 +1,12 @@
 package com.jmzd.ghazal.foodappmvvm.data.repository
 
+import com.jmzd.ghazal.foodappmvvm.data.model.home.ResponseCategoriesList
 import com.jmzd.ghazal.foodappmvvm.data.model.home.ResponseFoodsList
 import com.jmzd.ghazal.foodappmvvm.data.server.ApiServices
+import com.jmzd.ghazal.foodappmvvm.utils.MyResponse
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import retrofit2.Response
@@ -17,6 +20,28 @@ class HomeRepository @Inject constructor(private val api : ApiServices) {
         return flow {
             emit(api.foodRandom())
         }.flowOn(Dispatchers.IO)
+    }
+
+    suspend fun categoriesList(): Flow<MyResponse<ResponseCategoriesList>> {
+        return flow {
+            emit(MyResponse.loading())
+            //Response
+            when (api.categoriesList().code()) {
+                in 200..202 -> {
+                    emit(MyResponse.success(api.categoriesList().body()))
+                }
+                422 -> {
+                    emit(MyResponse.error(""))
+                }
+                in 400..499 -> {
+                    emit(MyResponse.error(""))
+                }
+                in 500..599 -> {
+                    emit(MyResponse.error(""))
+                }
+            }
+        }.catch { emit(MyResponse.error(it.message.toString())) }
+            .flowOn(Dispatchers.IO)
     }
 
 }

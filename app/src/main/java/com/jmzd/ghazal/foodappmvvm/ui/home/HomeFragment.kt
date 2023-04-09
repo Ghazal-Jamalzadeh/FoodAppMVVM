@@ -5,13 +5,18 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.viewModels
+import androidx.recyclerview.widget.LinearLayoutManager
 import coil.load
-import com.jmzd.ghazal.foodappmvvm.R
 import com.jmzd.ghazal.foodappmvvm.databinding.FragmentHomeBinding
+import com.jmzd.ghazal.foodappmvvm.ui.home.adapters.CategoriesAdapter
+import com.jmzd.ghazal.foodappmvvm.utils.MyResponse
 import com.jmzd.ghazal.foodappmvvm.utils.setupListWithAdapter
 import com.jmzd.ghazal.foodappmvvm.viewmodel.HomeViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import com.jmzd.ghazal.foodappmvvm.utils.*
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class HomeFragment : Fragment() {
@@ -22,6 +27,9 @@ class HomeFragment : Fragment() {
 
     //Other
     private val viewModel: HomeViewModel by viewModels()
+
+    @Inject
+    lateinit var categoriesAdapter: CategoriesAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -54,6 +62,30 @@ class HomeFragment : Fragment() {
                 filterSpinner.setupListWithAdapter(it) { letter : String ->
 //                    viewModel.loadFoodsList(letter)
                 }
+            }
+            //Category
+            viewModel.loadCategoriesList()
+            viewModel.categoriesListData.observe(viewLifecycleOwner) {
+                when (it.status) {
+                    MyResponse.Status.LOADING -> {
+                        homeCategoryLoading.isVisible(true, categoryList)
+                    }
+                    MyResponse.Status.SUCCESS -> {
+                        homeCategoryLoading.isVisible(false, categoryList)
+                        categoriesAdapter.setData(it.data!!.categories)
+                        categoryList.setupRecyclerView(
+                            LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false),
+                            categoriesAdapter
+                        )
+                    }
+                    MyResponse.Status.ERROR -> {
+                        homeCategoryLoading.isVisible(false, categoryList)
+                        Toast.makeText(requireContext(), it.message, Toast.LENGTH_SHORT).show()
+                    }
+                }
+            }
+            categoriesAdapter.setOnItemClickListener {
+//                viewModel.loadFoodByCategory(it.strCategory.toString())
             }
         }
 

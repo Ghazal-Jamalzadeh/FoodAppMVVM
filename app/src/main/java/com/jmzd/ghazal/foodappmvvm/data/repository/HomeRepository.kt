@@ -44,4 +44,40 @@ class HomeRepository @Inject constructor(private val api : ApiServices) {
             .flowOn(Dispatchers.IO)
     }
 
+    suspend fun foodsList(letter: String): Flow<MyResponse<ResponseFoodsList>> {
+        return flow {
+            emit(MyResponse.loading())
+            when (api.foodsList(letter).code()) {
+                in 200..202 -> {
+                    emit(MyResponse.success(api.foodsList(letter).body()))
+                }
+            }
+        }.catch { emit(MyResponse.error(it.message.toString())) }
+            .flowOn(Dispatchers.IO)
+    }
+
+    suspend fun foodsBySearch(letter: String): Flow<MyResponse<ResponseFoodsList>> {
+        return flow {
+            emit(MyResponse.loading())
+            when (api.searchFood(letter).code()) {
+                in 200..202 -> {
+                    emit(MyResponse.success(api.searchFood(letter).body()))
+                }
+            }
+        }.catch { emit(MyResponse.error(it.message.toString())) }
+            .flowOn(Dispatchers.IO)
+    }
+
+    suspend fun foodsByCategory(letter: String): Flow<MyResponse<ResponseFoodsList>> {
+        return flow {
+            emit(MyResponse.loading())
+            when (api.foodsByCategory(letter).code()) {
+                in 200..202 -> {
+                    emit(MyResponse.success(api.foodsByCategory(letter).body()))
+                }
+            }
+        }.catch { emit(MyResponse.error(it.message.toString())) }
+            .flowOn(Dispatchers.IO)
+    }
+
 }

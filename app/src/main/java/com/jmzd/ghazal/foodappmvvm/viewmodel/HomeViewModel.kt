@@ -37,4 +37,17 @@ class HomeViewModel @Inject constructor(private val repository: HomeRepository) 
             categoriesListData.postValue(it) }
     }
 
+    val foodsListData = MutableLiveData<MyResponse<ResponseFoodsList>>()
+    fun loadFoodsList(letter: String) = viewModelScope.launch(Dispatchers.IO) {
+        repository.foodsList(letter).collect { foodsListData.postValue(it) }
+    }
+
+    fun loadFoodBySearch(letter: String) = viewModelScope.launch(Dispatchers.IO) {
+        repository.foodsBySearch(letter).collect { foodsListData.postValue(it) }
+    }
+
+    fun loadFoodByCategory(letter: String) = viewModelScope.launch(Dispatchers.IO) {
+        repository.foodsByCategory(letter).collect { foodsListData.postValue(it) }
+    }
+
 }

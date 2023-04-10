@@ -6,11 +6,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import coil.load
 import com.jmzd.ghazal.foodappmvvm.databinding.FragmentHomeBinding
 import com.jmzd.ghazal.foodappmvvm.ui.home.adapters.CategoriesAdapter
+import com.jmzd.ghazal.foodappmvvm.ui.home.adapters.FoodsAdapter
 import com.jmzd.ghazal.foodappmvvm.utils.MyResponse
 import com.jmzd.ghazal.foodappmvvm.utils.setupListWithAdapter
 import com.jmzd.ghazal.foodappmvvm.viewmodel.HomeViewModel
@@ -30,6 +32,9 @@ class HomeFragment : Fragment() {
 
     @Inject
     lateinit var categoriesAdapter: CategoriesAdapter
+
+    @Inject
+    lateinit var foodsAdapter: FoodsAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -60,7 +65,7 @@ class HomeFragment : Fragment() {
             viewModel.filtersListData.observe(viewLifecycleOwner) {
                 //it : MutableList<Char>!
                 filterSpinner.setupListWithAdapter(it) { letter : String ->
-//                    viewModel.loadFoodsList(letter)
+                    viewModel.loadFoodsList(letter)
                 }
             }
             //Category
@@ -85,7 +90,48 @@ class HomeFragment : Fragment() {
                 }
             }
             categoriesAdapter.setOnItemClickListener {
-//                viewModel.loadFoodByCategory(it.strCategory.toString())
+                viewModel.loadFoodByCategory(it.strCategory.toString())
+            }
+
+            // Foods
+            val rand = ('A'..'Z').random()
+            viewModel.loadFoodsList(rand.toString())
+            viewModel.foodsListData.observe(viewLifecycleOwner) {
+                when (it.status) {
+                    MyResponse.Status.LOADING -> {
+                        homeFoodsLoading.isVisible(true, foodsList)
+                    }
+                    MyResponse.Status.SUCCESS -> {
+                        homeFoodsLoading.isVisible(false, foodsList)
+                        if (it.data!!.meals != null) {
+                            if (it.data.meals!!.isNotEmpty()) {
+//                                checkConnectionOrEmpty(false, PageState.NONE)
+                                foodsAdapter.setData(it.data.meals)
+                                foodsList.setupRecyclerView(
+                                    LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false),
+                                    foodsAdapter
+                                )
+                            }
+                        } else {
+//                            checkConnectionOrEmpty(true, PageState.EMPTY)
+                        }
+                    }
+                    MyResponse.Status.ERROR -> {
+                        homeFoodsLoading.isVisible(false, foodsList)
+                        Toast.makeText(requireContext(), it.message, Toast.LENGTH_SHORT).show()
+                    }
+                }
+            }
+            foodsAdapter.setOnItemClickListener {
+//                val direction = FoodsListFragmentDirections.actionListToDetail(it.idMeal!!.toInt())
+//                findNavController().navigate(direction)
+            }
+
+            //Search
+            searchEdt.addTextChangedListener{
+                if (it.toString().length > 2) {
+                    viewModel.loadFoodBySearch(it.toString())
+                }
             }
         }
 

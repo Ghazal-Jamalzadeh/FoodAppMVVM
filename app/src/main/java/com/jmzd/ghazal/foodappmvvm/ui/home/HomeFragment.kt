@@ -10,6 +10,7 @@ import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import coil.load
+import com.jmzd.ghazal.foodappmvvm.R
 import com.jmzd.ghazal.foodappmvvm.databinding.FragmentHomeBinding
 import com.jmzd.ghazal.foodappmvvm.ui.home.adapters.CategoriesAdapter
 import com.jmzd.ghazal.foodappmvvm.ui.home.adapters.FoodsAdapter
@@ -35,6 +36,11 @@ class HomeFragment : Fragment() {
 
     @Inject
     lateinit var foodsAdapter: FoodsAdapter
+
+    @Inject
+    lateinit var connection: CheckConnection
+
+    enum class PageState { EMPTY, NETWORK, NONE }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -73,10 +79,10 @@ class HomeFragment : Fragment() {
             viewModel.categoriesListData.observe(viewLifecycleOwner) {
                 when (it.status) {
                     MyResponse.Status.LOADING -> {
-                        homeCategoryLoading.isVisible(true, categoryList)
+                        homeCategoryLoading.isVisibleGone(true, categoryList)
                     }
                     MyResponse.Status.SUCCESS -> {
-                        homeCategoryLoading.isVisible(false, categoryList)
+                        homeCategoryLoading.isVisibleGone(false, categoryList)
                         categoriesAdapter.setData(it.data!!.categories)
                         categoryList.setupRecyclerView(
                             LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false),
@@ -84,7 +90,7 @@ class HomeFragment : Fragment() {
                         )
                     }
                     MyResponse.Status.ERROR -> {
-                        homeCategoryLoading.isVisible(false, categoryList)
+                        homeCategoryLoading.isVisibleGone(false, categoryList)
                         Toast.makeText(requireContext(), it.message, Toast.LENGTH_SHORT).show()
                     }
                 }
@@ -99,13 +105,13 @@ class HomeFragment : Fragment() {
             viewModel.foodsListData.observe(viewLifecycleOwner) {
                 when (it.status) {
                     MyResponse.Status.LOADING -> {
-                        homeFoodsLoading.isVisible(true, foodsList)
+                        homeFoodsLoading.isVisibleGone(true, foodsList)
                     }
                     MyResponse.Status.SUCCESS -> {
-                        homeFoodsLoading.isVisible(false, foodsList)
+                        homeFoodsLoading.isVisibleGone(false, foodsList)
                         if (it.data!!.meals != null) {
                             if (it.data.meals!!.isNotEmpty()) {
-//                                checkConnectionOrEmpty(false, PageState.NONE)
+                                checkConnectionOrEmpty(false, PageState.NONE)
                                 foodsAdapter.setData(it.data.meals)
                                 foodsList.setupRecyclerView(
                                     LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false),
@@ -113,11 +119,11 @@ class HomeFragment : Fragment() {
                                 )
                             }
                         } else {
-//                            checkConnectionOrEmpty(true, PageState.EMPTY)
+                            checkConnectionOrEmpty(true, PageState.EMPTY)
                         }
                     }
                     MyResponse.Status.ERROR -> {
-                        homeFoodsLoading.isVisible(false, foodsList)
+                        homeFoodsLoading.isVisibleGone(false, foodsList)
                         Toast.makeText(requireContext(), it.message, Toast.LENGTH_SHORT).show()
                     }
                 }
@@ -133,6 +139,15 @@ class HomeFragment : Fragment() {
                     viewModel.loadFoodBySearch(it.toString())
                 }
             }
+            //Internet
+            connection.observe(viewLifecycleOwner) {
+                //it : Boolean!
+                if (it) {
+                    checkConnectionOrEmpty(false, PageState.NONE)
+                } else {
+                    checkConnectionOrEmpty(true, PageState.NETWORK)
+                }
+            }
         }
 
     }
@@ -140,6 +155,27 @@ class HomeFragment : Fragment() {
     override fun onStop() {
         super.onStop()
         _binding = null
+    }
+
+    private fun checkConnectionOrEmpty(isShownError: Boolean, state: PageState) {
+        binding?.apply {
+            if (isShownError) {
+                homeDisLay.isVisibleInvisible(true, homeContent)
+                when (state) {
+                    PageState.EMPTY -> {
+                        disconnectLay.disImg.setImageResource(R.drawable.box)
+                        disconnectLay.disTxt.text = getString(R.string.emptyList)
+                    }
+                    PageState.NETWORK -> {
+                        disconnectLay.disImg.setImageResource(R.drawable.disconnect)
+                        disconnectLay.disTxt.text = getString(R.string.checkInternet)
+                    }
+                    else -> {}
+                }
+            } else {
+                homeDisLay.isVisibleInvisible(false, homeContent)
+            }
+        }
     }
 
 }

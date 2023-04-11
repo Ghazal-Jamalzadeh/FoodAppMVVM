@@ -29,12 +29,22 @@ fun Spinner.setupListWithAdapter(list: MutableList<out Any>, callback: (String) 
 
 }
 
-fun View.isVisible(isShowLoading: Boolean, container: View) {
+fun View.isVisibleGone(isShowLoading: Boolean, container: View) {
     if (isShowLoading) {
         this.visibility = View.VISIBLE
         container.visibility = View.GONE
     } else {
         this.visibility = View.GONE
+        container.visibility = View.VISIBLE
+    }
+}
+
+fun View.isVisibleInvisible(isShowLoading: Boolean, container: View) {
+    if (isShowLoading) {
+        this.visibility = View.VISIBLE
+        container.visibility = View.INVISIBLE
+    } else {
+        this.visibility = View.INVISIBLE
         container.visibility = View.VISIBLE
     }
 }

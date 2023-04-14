@@ -1,6 +1,7 @@
 package com.jmzd.ghazal.foodappmvvm.ui.home
 
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -56,7 +57,7 @@ class HomeFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         binding?.apply {
             //Random food
-            /*viewModel.loadFoodRandom()*/
+            viewModel.loadFoodRandom()
             viewModel.randomFoodData.observe(viewLifecycleOwner) {
                 // it : List<ResponseFoodsList.Meal>!
                 it[0].let { meal ->
@@ -68,15 +69,18 @@ class HomeFragment : Fragment() {
                 }
             }
             //Filters
-            /*viewModel.loadFilterList()*/
+//            viewModel.loadFilterList()
             viewModel.filtersListData.observe(viewLifecycleOwner) {
                 //it : MutableList<Char>!
                 filterSpinner.setupListWithAdapter(it) { letter : String ->
+                    if(viewModel.lastSelectedLetter != letter){
+                        viewModel.lastSelectedLetter = letter
                     viewModel.loadFoodsList(letter)
+                    }
                 }
             }
             //Category
-            viewModel.loadCategoriesList()
+            /*viewModel.loadCategoriesList()*/
             viewModel.categoriesListData.observe(viewLifecycleOwner) {
                 when (it.status) {
                     MyResponse.Status.LOADING -> {
@@ -102,6 +106,7 @@ class HomeFragment : Fragment() {
 
             // Foods
             val rand = ('A'..'Z').random()
+            Log.d(TAG, "random: $rand")
             viewModel.loadFoodsList(rand.toString())
             viewModel.foodsListData.observe(viewLifecycleOwner) {
                 when (it.status) {
@@ -130,7 +135,7 @@ class HomeFragment : Fragment() {
                 }
             }
             foodsAdapter.setOnItemClickListener {
-                val direction = HomeFragmentDirections.actionHomeFragmentToDetailFragment(it.idMeal!!.toInt())
+                val direction = HomeFragmentDirections.actionToDetailFragment(it.idMeal!!.toInt())
                 findNavController().navigate(direction)
             }
 

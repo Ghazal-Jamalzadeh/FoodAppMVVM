@@ -1,5 +1,6 @@
 package com.jmzd.ghazal.foodappmvvm.utils
 
+import android.util.Log
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
@@ -16,8 +17,10 @@ fun Spinner.setupListWithAdapter(list: MutableList<out Any>, callback: (String) 
     val adapter = ArrayAdapter(context, R.layout.item_spinner, list)
     adapter.setDropDownViewResource(R.layout.item_spinner_list)
     this.adapter = adapter
+    this.setSelection(0,false)
     this.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
         override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
+            Log.d(TAG, "onItemSelected: ${list[p2]}")
             callback(list[p2].toString())
         }
 

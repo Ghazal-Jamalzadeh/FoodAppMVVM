@@ -19,7 +19,10 @@ class HomeViewModel @Inject constructor(private val repository: HomeRepository) 
     init {
         loadFoodRandom()
         loadCategoriesList()
+        loadFilterList()
     }
+
+    var lastSelectedLetter = "A"
 
     val randomFoodData = MutableLiveData<List<Meal>>()
     fun loadFoodRandom() = viewModelScope.launch(Dispatchers.IO) {

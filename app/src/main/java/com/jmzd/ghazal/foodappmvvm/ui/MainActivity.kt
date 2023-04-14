@@ -2,7 +2,9 @@ package com.jmzd.ghazal.foodappmvvm.ui
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.View
 import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.ui.setupWithNavController
 import com.jmzd.ghazal.foodappmvvm.R
 import com.jmzd.ghazal.foodappmvvm.databinding.ActivityMainBinding
 import dagger.hilt.android.AndroidEntryPoint
@@ -23,7 +25,18 @@ class MainActivity : AppCompatActivity() {
         _binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        //nav host
         navHost = supportFragmentManager.findFragmentById(R.id.navHost) as NavHostFragment
+        //Bottom nav
+        binding.bottomNav.setupWithNavController(navHost.navController)
+        //Hide bottom nav
+        navHost.navController.addOnDestinationChangedListener { _, destination, _ ->
+            if (destination.id == R.id.detailFragment) {
+                binding.bottomNav.visibility = View.GONE
+            } else {
+                binding.bottomNav.visibility = View.VISIBLE
+            }
+        }
 
     }
 

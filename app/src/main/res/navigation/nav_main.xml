@@ -10,9 +10,7 @@
         android:name="com.jmzd.ghazal.foodappmvvm.ui.home.HomeFragment"
         android:label="HomeFragment"
         tools:layout="@layout/fragment_home">
-        <action
-            android:id="@+id/action_homeFragment_to_detailFragment"
-            app:destination="@id/detailFragment" />
+
     </fragment>
     <fragment
         android:id="@+id/detailFragment"
@@ -23,4 +21,18 @@
             android:name="foodId"
             app:argType="integer" />
     </fragment>
+    <fragment
+        android:id="@+id/favoritesFragment"
+        android:name="com.jmzd.ghazal.foodappmvvm.ui.favorites.FavoritesFragment"
+        android:label="FavoritesFragment"
+        tools:layout="@layout/fragment_favorites"/>
+
+    <action
+        android:id="@+id/action_to_detailFragment"
+        app:destination="@id/detailFragment"
+        app:enterAnim="@anim/nav_default_enter_anim"
+        app:exitAnim="@anim/nav_default_exit_anim"
+        app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+        app:popExitAnim="@anim/nav_default_pop_exit_anim"
+        />
 </navigation>

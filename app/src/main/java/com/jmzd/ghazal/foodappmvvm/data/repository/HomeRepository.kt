@@ -1,9 +1,11 @@
 package com.jmzd.ghazal.foodappmvvm.data.repository
 
+import android.util.Log
 import com.jmzd.ghazal.foodappmvvm.data.model.home.ResponseCategoriesList
 import com.jmzd.ghazal.foodappmvvm.data.model.home.ResponseFoodsList
 import com.jmzd.ghazal.foodappmvvm.data.server.ApiServices
 import com.jmzd.ghazal.foodappmvvm.utils.MyResponse
+import com.jmzd.ghazal.foodappmvvm.utils.TAG
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
@@ -46,6 +48,7 @@ class HomeRepository @Inject constructor(private val api : ApiServices) {
 
     suspend fun foodsList(letter: String): Flow<MyResponse<ResponseFoodsList>> {
         return flow {
+            Log.d(TAG, "letter : $letter")
             emit(MyResponse.loading())
             when (api.foodsList(letter).code()) {
                 in 200..202 -> {

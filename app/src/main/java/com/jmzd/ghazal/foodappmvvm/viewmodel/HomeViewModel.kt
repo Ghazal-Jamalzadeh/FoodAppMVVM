@@ -16,6 +16,11 @@ import javax.inject.Inject
 @HiltViewModel
 class HomeViewModel @Inject constructor(private val repository: HomeRepository) : ViewModel() {
 
+    init {
+        loadFoodRandom()
+        loadCategoriesList()
+    }
+
     val randomFoodData = MutableLiveData<List<Meal>>()
     fun loadFoodRandom() = viewModelScope.launch(Dispatchers.IO) {
         repository.randomFood().collect {

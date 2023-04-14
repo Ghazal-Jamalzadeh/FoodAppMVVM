@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import coil.load
 import com.jmzd.ghazal.foodappmvvm.R
@@ -55,7 +56,7 @@ class HomeFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         binding?.apply {
             //Random food
-            viewModel.loadFoodRandom()
+            /*viewModel.loadFoodRandom()*/
             viewModel.randomFoodData.observe(viewLifecycleOwner) {
                 // it : List<ResponseFoodsList.Meal>!
                 it[0].let { meal ->
@@ -67,7 +68,7 @@ class HomeFragment : Fragment() {
                 }
             }
             //Filters
-            viewModel.loadFilterList()
+            /*viewModel.loadFilterList()*/
             viewModel.filtersListData.observe(viewLifecycleOwner) {
                 //it : MutableList<Char>!
                 filterSpinner.setupListWithAdapter(it) { letter : String ->
@@ -129,8 +130,8 @@ class HomeFragment : Fragment() {
                 }
             }
             foodsAdapter.setOnItemClickListener {
-//                val direction = FoodsListFragmentDirections.actionListToDetail(it.idMeal!!.toInt())
-//                findNavController().navigate(direction)
+                val direction = HomeFragmentDirections.actionHomeFragmentToDetailFragment(it.idMeal!!.toInt())
+                findNavController().navigate(direction)
             }
 
             //Search

@@ -1,5 +1,8 @@
 package com.jmzd.ghazal.foodappmvvm.data.repository
 
+import androidx.room.Dao
+import com.jmzd.ghazal.foodappmvvm.data.database.FoodDao
+import com.jmzd.ghazal.foodappmvvm.data.database.FoodEntity
 import com.jmzd.ghazal.foodappmvvm.data.model.home.ResponseFoodsList
 import com.jmzd.ghazal.foodappmvvm.data.server.ApiServices
 import com.jmzd.ghazal.foodappmvvm.utils.MyResponse
@@ -10,7 +13,7 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import javax.inject.Inject
 
-class DetailRepository @Inject constructor(private val api: ApiServices) {
+class DetailRepository @Inject constructor(private val api: ApiServices , private val dao: FoodDao) {
 
     suspend fun foodDetail(id: Int): Flow<MyResponse<ResponseFoodsList>> {
         return flow {
@@ -23,4 +26,8 @@ class DetailRepository @Inject constructor(private val api: ApiServices) {
         }.catch { emit(MyResponse.error(it.message.toString())) }
             .flowOn(Dispatchers.IO)
     }
+
+    suspend fun saveFood(entity: FoodEntity) = dao.saveFood(entity)
+    suspend fun deleteFood(entity: FoodEntity) = dao.deleteFood(entity)
+    fun existsFood(id: Int) = dao.existsFood(id)
 }

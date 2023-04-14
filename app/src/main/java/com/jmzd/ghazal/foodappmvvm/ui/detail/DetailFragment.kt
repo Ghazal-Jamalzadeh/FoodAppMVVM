@@ -8,12 +8,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import coil.load
 import com.google.gson.Gson
 import com.jmzd.ghazal.foodappmvvm.R
+import com.jmzd.ghazal.foodappmvvm.data.database.FoodEntity
 import com.jmzd.ghazal.foodappmvvm.data.model.home.ResponseFoodsList
 import com.jmzd.ghazal.foodappmvvm.databinding.FragmentDetailBinding
 import com.jmzd.ghazal.foodappmvvm.ui.detail.player.PlayerActivity
@@ -37,13 +39,14 @@ class DetailFragment : Fragment() {
     @Inject
     lateinit var connection: CheckConnection
 
-/*    @Inject
-    lateinit var entity: FoodEntity*/
+    @Inject
+    lateinit var entity: FoodEntity
 
     //Other
     private val args: DetailFragmentArgs by navArgs()
-    private var foodId = 0
     private val viewModel: DetailViewModel by viewModels()
+    private var foodId = 0
+    private var isFavorite = false
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -76,9 +79,9 @@ class DetailFragment : Fragment() {
                         //Set data
                         it.data?.meals?.get(0)?.let { itMeal : ResponseFoodsList.Meal ->
                             //Entity
-                        /*    entity.id = itMeal.idMeal!!.toInt()
+                            entity.id = itMeal.idMeal!!.toInt()
                             entity.title = itMeal.strMeal.toString()
-                            entity.img = itMeal.strMealThumb.toString()*/
+                            entity.img = itMeal.strMealThumb.toString()
                             //Set data
                             foodCoverImg.load(itMeal.strMealThumb) {
                                 crossfade(true)
@@ -135,6 +138,23 @@ class DetailFragment : Fragment() {
                         Toast.makeText(requireContext(), it.message, Toast.LENGTH_SHORT).show()
                     }
                 }
+            }
+            //Favorite
+            viewModel.existsFood(foodId)
+            viewModel.isFavoriteData.observe(viewLifecycleOwner) {
+                isFavorite = it
+                if (it) {
+                    detailFav.setColorFilter(ContextCompat.getColor(requireContext(), R.color.tartOrange))
+                } else {
+                    detailFav.setColorFilter(ContextCompat.getColor(requireContext(), R.color.black))
+                }
+            }
+            //Save / Delete
+            detailFav.setOnClickListener {
+                if (isFavorite) {
+                    viewModel.deleteFood(entity)
+                } else
+                    viewModel.saveFood(entity)
             }
         }
     }
